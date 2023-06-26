@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import ValidateForm from 'src/app/helpers/validateForm';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/Services/auth.service';
+import ValidateForm from 'src/app/helpers/validateform';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +16,7 @@ export class LoginComponent implements OnInit{
   loginForm!:FormGroup;
 
 
-  constructor(private fb:FormBuilder){}
+  constructor(private fb:FormBuilder,private authServerice:AuthService,private router:Router){}
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       username:['', Validators.required],
@@ -27,11 +29,22 @@ export class LoginComponent implements OnInit{
     this.isText ? this.eyeIcon ="fa-eye":this.eyeIcon="fa-eye-slash";
     this.isText ? this.type ='text':this.type ="password";
   }
-  onSubmit(){
+  onLogin(){
     if(this.loginForm.valid){
 
       console.log(this.loginForm.value);
       //send to object to database
+      this.authServerice.logIn(this.loginForm.value)
+      .subscribe({
+        next:(response)=>{
+          alert(response.message);
+          this.loginForm.reset();
+          this.router.navigate(['/dashboard']);
+        },
+        error:(err)=>{
+          alert(err?.error.message);
+        }
+      })
 
 
     }else{

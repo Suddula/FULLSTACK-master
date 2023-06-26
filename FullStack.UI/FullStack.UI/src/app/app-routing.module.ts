@@ -5,11 +5,13 @@ import { AddEmployeeComponent } from './components/Employees/add-employee/add-em
 import { EditeEmployeeComponent } from './components/Employees/edite-employee/edite-employee.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 const routes: Routes = [
+  {path:'',component:LoginComponent},
   {path:'login',component:LoginComponent},
   {path:'singup',component:SignupComponent},
-  {path:'',component:EmployeeListComponent},
+  {path:'dashboard',component:DashboardComponent},
   {path:'employees',component:EmployeeListComponent},
   {path:'employee/add',component:AddEmployeeComponent},
   {path:'employee/edit/:id',component:EditeEmployeeComponent}
