@@ -1,11 +1,15 @@
 ﻿using FullStack.API.Data;
 using FullStack.API.Helpers;
 using FullStack.API.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
+
+
 
 namespace FullStack.API.Controllers
 {
@@ -35,9 +39,12 @@ namespace FullStack.API.Controllers
             {
                 return BadRequest(new { MessageProcessingHandler = "Password is InCorrect" });
             }
+            user.Token = CreateJwt(user);
+
 
             return Ok(new
             {
+                Token = user.Token,
                 Message = "Login Success!"
             });
         }
@@ -102,6 +109,28 @@ namespace FullStack.API.Controllers
 
         } 
 
+
+        private string CreateJwt(User user)
+        {
+            var jwtTokenHeader = new JwtSecurityTokenHandler();
+            var key = Encoding.GetBytes("veryverysceret.....");
+            var identity = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Role,user.Role), 
+                new Claim(ClaimTypes.Name,$"{user.FirstName} {user.LastName}")
+            }) ;
+
+            var credentails = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = identity,
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = credentails
+
+            };
+            var token = jwtTokenHeader.CreateToken(tokenDescriptor);
+            return jwtTokenHeader.WriteToken(token);
+        }
 
     }
 }

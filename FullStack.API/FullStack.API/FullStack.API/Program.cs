@@ -1,5 +1,8 @@
 using FullStack.API.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +28,24 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FullStackDBContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("FullStackConnectionString"))
 );
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = false,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.GetBytes("veryverysceret.....")),
+        ValidateAudience = false,
+        ValidateIssuer = false
+
+    };
+  });
 
 var app = builder.Build();
 

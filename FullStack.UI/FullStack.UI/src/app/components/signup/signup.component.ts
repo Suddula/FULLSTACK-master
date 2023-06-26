@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgToastService } from 'ng-angular-popup';
 import { AuthService } from 'src/app/Services/auth.service';
 import ValidateForm from 'src/app/helpers/validateform';
 
@@ -15,7 +16,11 @@ export class SignupComponent implements OnInit {
   eyeIcon:string= "fa-eye-slash";
   signUpForm!:FormGroup;
 
-  constructor(private fb : FormBuilder,private auth:AuthService,private router:Router){}
+  constructor(private fb : FormBuilder,
+    private auth:AuthService,
+    private router:Router,
+    private toast:NgToastService
+    ){}
 
   ngOnInit(): void {
   this.signUpForm = this.fb.group({
@@ -39,12 +44,12 @@ onSignUp(){
     this.auth.signUp(this.signUpForm.value)
     .subscribe({
       next:(res)=>{
-        alert(res.message);
+       this.toast.success({detail:"SUCCESS",summary:res.message,duration:5000});
         this.signUpForm.reset();
         this.router.navigate(['/login']);
       },
       error:(err)=>{
-        alert(err.error.message);
+       this.toast.error({detail:"ERROR",summary:"Something When Wrong!",duration:5000});
       }
     })
 
