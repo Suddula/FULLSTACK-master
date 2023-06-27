@@ -37,8 +37,9 @@ namespace FullStack.API.Controllers
 
             if (!PasswordHasher.VerifyPassword(userObj.Password, user.Password))
             {
-                return BadRequest(new { MessageProcessingHandler = "Password is InCorrect" });
+                return BadRequest(new { Message = "Password is InCorrect" });
             }
+
             user.Token = CreateJwt(user);
 
 
@@ -113,7 +114,7 @@ namespace FullStack.API.Controllers
         private string CreateJwt(User user)
         {
             var jwtTokenHeader = new JwtSecurityTokenHandler();
-            var key = Encoding.GetBytes("veryverysceret.....");
+            var key = Encoding.ASCII.GetBytes("veryverysceret.....");
             var identity = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Role,user.Role), 
