@@ -133,5 +133,11 @@ namespace FullStack.API.Controllers
             return jwtTokenHeader.WriteToken(token);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<User>> GetAllUsers()
+        {
+            return Ok(await _fullStackDBContext.Users.ToListAsync());
+        }
+
     }
 }

@@ -6,15 +6,16 @@ import { EditeEmployeeComponent } from './components/Employees/edite-employee/ed
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { authGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  {path:'',component:LoginComponent},
+  {path:'',redirectTo:'login',pathMatch:'full'},
   {path:'login',component:LoginComponent},
   {path:'singup',component:SignupComponent},
-  {path:'dashboard',component:DashboardComponent},
-  {path:'employees',component:EmployeeListComponent},
-  {path:'employee/add',component:AddEmployeeComponent},
-  {path:'employee/edit/:id',component:EditeEmployeeComponent}
+  {path:'dashboard',component:DashboardComponent,canActivate:[authGuard]},
+  {path:'dashboard/employees',component:EmployeeListComponent},
+  {path:'dashboard/employee/add',component:AddEmployeeComponent},
+  {path:'dashboard/employee/edit/:id',component:EditeEmployeeComponent}
 ];
 
 @NgModule({
