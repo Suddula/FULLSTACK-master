@@ -45,9 +45,9 @@ export class LoginComponent implements OnInit{
           this.loginForm.reset();
           this.authServerice.storeToken(response.token);
           this.toast.success({detail:"SUCCESS",summary:response.message,duration:5000});
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['dashboard']);
         },
-        error:(err)=>{
+        error:()=>{
           this.toast.error({detail:"ERROR",summary:"Something when wrong!",duration:5000});
         }
       })

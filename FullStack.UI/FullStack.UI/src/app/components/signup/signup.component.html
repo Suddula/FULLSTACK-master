@@ -25,20 +25,21 @@
               </div>
               <small class="text-danger" *ngIf="signUpForm.controls['lastName'].dirty && signUpForm.hasError('required','lastName')">*LastName is Required</small>
               <div class="form-group pt-3">
-                <div class="input-field" [class.error]="signUpForm.controls['email'].dirty && signUpForm.hasError('required','email')">
-                  <span class="fa fa-user p-2"></span>
-                  <input formControlName="email" type="text" placeholder="Email">
-                </div>
-              </div>
-              <small class="text-danger" *ngIf="signUpForm.controls['email'].dirty && signUpForm.hasError('required','email')">*Email is Required</small>
-              <div class="form-group pt-3">
                 <div class="input-field" [class.error]="signUpForm.controls['userName'].dirty && signUpForm.hasError('required','userName')">
                   <span class="fa fa-user p-2"></span>
                   <input formControlName="userName" type="text" placeholder="Username">
                 </div>
               </div>
               <small class="text-danger" *ngIf="signUpForm.controls['userName'].dirty && signUpForm.hasError('required','userName')">*UserName is Required</small>
+
               <div class="form-group pt-3">
+                <div class="input-field" [class.error]="signUpForm.controls['email'].dirty && signUpForm.hasError('required','email')">
+                  <span class="fa fa-user p-2"></span>
+                  <input formControlName="email" type="text" placeholder="Email">
+                </div>
+              </div>
+              <small class="text-danger" *ngIf="signUpForm.controls['email'].dirty && signUpForm.hasError('required','email')">*Email is Required</small>
+               <div class="form-group pt-3">
                 <div class="input-field" [class.error]="signUpForm.controls['password'].dirty && signUpForm.hasError('required','password')">
                   <span class="fa fa-lock p-2"></span>
                   <input formControlName="password" [type]="type" placeholder="Password">

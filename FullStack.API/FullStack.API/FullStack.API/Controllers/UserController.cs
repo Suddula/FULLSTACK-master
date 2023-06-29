@@ -1,6 +1,7 @@
 ﻿using FullStack.API.Data;
 using FullStack.API.Helpers;
 using FullStack.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -132,7 +133,7 @@ namespace FullStack.API.Controllers
             var token = jwtTokenHeader.CreateToken(tokenDescriptor);
             return jwtTokenHeader.WriteToken(token);
         }
-
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> GetAllUsers()
         {

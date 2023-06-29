@@ -1,31 +1,24 @@
-import { Injectable, inject } from "@angular/core";
-import { CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from "@angular/router";
+
+import { inject } from "@angular/core";
+import { CanActivateFn, Router } from "@angular/router";
 import { NgToastService } from "ng-angular-popup";
-import { Observable } from "rxjs/internal/Observable";
-import { AuthService } from "../Services/auth.service";
 
-@Injectable({
-  providedIn:'root'
-})
-export class authGuard {
 
-  constructor(private router:Router,
-    private toast:NgToastService,
-    private auth:AuthService){}
-  
-  canActivate():boolean{
-      if(!this.auth.isLoggedIn()){
-        return true;
-      }else{
-        this.toast.error({detail:"ERROR",summary:"Please Login First!"});
-        this.router.navigate(['login']);
-        return false;
-      }
+
+
+// 
+
+export const authGuard : CanActivateFn = (_route, _state) => {
+  const token = localStorage.getItem('token');
+  const router =inject(Router);
+  const toast = inject(NgToastService);
+  console.log(token,token);
+  if(token){
+    return true;
+  }else{
+    toast.error({detail:"ERROR",summary:"Token not there"});
+    router.navigate(['login']);
+    return false;
   }
-
-
+   
 }
-
-
-
-

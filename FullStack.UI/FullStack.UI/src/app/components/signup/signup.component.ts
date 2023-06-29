@@ -48,7 +48,7 @@ onSignUp(){
         this.signUpForm.reset();
         this.router.navigate(['/login']);
       },
-      error:(err)=>{
+      error:()=>{
        this.toast.error({detail:"ERROR",summary:"Something When Wrong!",duration:5000});
       }
     })

@@ -7,15 +7,18 @@ import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 
 const routes: Routes = [
   {path:'',redirectTo:'login',pathMatch:'full'},
   {path:'login',component:LoginComponent},
   {path:'singup',component:SignupComponent},
-  {path:'dashboard',component:DashboardComponent,canActivate:[authGuard]},
-  {path:'dashboard/employees',component:EmployeeListComponent},
-  {path:'dashboard/employee/add',component:AddEmployeeComponent},
-  {path:'dashboard/employee/edit/:id',component:EditeEmployeeComponent}
+  {path:'dashboard',component:DashboardComponent,canActivate:[authGuard,roleGuard],data:{
+    role:"ADMIN"
+  }},
+  {path:'employees',component:EmployeeListComponent},
+  {path:'employees/add',component:AddEmployeeComponent,canActivate:[authGuard]},
+  {path:'employees/edit/:id',component:EditeEmployeeComponent,canActivate:[authGuard]}
 ];
 
 @NgModule({
