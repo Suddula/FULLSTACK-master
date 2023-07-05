@@ -49,11 +49,10 @@ namespace FullStack.API.Controllers
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(5);
             await _fullStackDBContext.SaveChangesAsync();
-
             return Ok(new TokenApiDto()
             {
                 AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken,
+                RefreshToken = newRefreshToken
             });
         }
         [HttpPost("register")]
@@ -144,15 +143,15 @@ namespace FullStack.API.Controllers
         private string CreateRefreshToken()
         {
             var tokenBytes = RandomNumberGenerator.GetBytes(64);
-            var refershToken = Convert.ToBase64String(tokenBytes);
+            var refreshToken = Convert.ToBase64String(tokenBytes);
 
             var tokenInUser = _fullStackDBContext.Users
-                .Any(a=>a.RefreshToken == refershToken);
+                .Any(a=>a.RefreshToken == refreshToken);
             if(tokenInUser)
             {
                 return CreateRefreshToken();
             }
-            return refershToken;
+            return refreshToken;
         }
 
         private ClaimsPrincipal GetPrincipleFormExpiredToken(string token)
@@ -171,7 +170,7 @@ namespace FullStack.API.Controllers
             SecurityToken securityToken;
             var prinicipal = tokenHandler.ValidateToken(token,tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("This is Inavalid Token");
             return prinicipal;
 
@@ -187,9 +186,9 @@ namespace FullStack.API.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult>Refresh(TokenApiDto tokenApiDto)
+        public async Task<IActionResult> Refresh([FromBody]TokenApiDto tokenApiDto)
         {
-            if (tokenApiDto == null)
+            if (tokenApiDto is null)
                 return BadRequest("Invalid Client Request");
             string accessToken = tokenApiDto.AccessToken;
             string refreshToken = tokenApiDto.RefreshToken;
@@ -200,13 +199,13 @@ namespace FullStack.API.Controllers
             if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
                 return BadRequest("Invalid Request");
             var newAccessToken = CreateJwt(user);
-            var newRefeshToken = CreateRefreshToken();
-            user.RefreshToken = newAccessToken;
+            var newRefreshToken = CreateRefreshToken();
+            user.RefreshToken = newRefreshToken;
             await _fullStackDBContext.SaveChangesAsync();
             return Ok(new TokenApiDto()
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
+                RefreshToken = refreshToken
 
             });
 

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg  navbar-dark bg-dark">
+<!-- <nav class="navbar navbar-expand-lg  navbar-dark bg-dark">
   <div class="container">
     <a class="navbar-brand" href="#">FullStack</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,10 +21,31 @@
       </ul>
       <!-- <span class="navbar-text">
         Navbar text with an inline element
-      </span> -->
+      </span> --
     </div>
     <div>
       <h4 class="navbar-brand user-name">Hello!,{{fullName}}</h4>
+    </div>
+  </div>
+</nav> -->
+<nav class="navbar navbar-light bg-light navbar-dark bg-dark">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-4">
+        <a class="navbar-brand">Hello!,{{fullName}}</a>
+      </div>
+      <div class="col-8">
+        <form class="d-flex">
+          <div class="row">
+            <div class="col-10">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            </div>
+            <div class="col-2">
+              <button class="btn btn-success" type="submit" (click)="logOut()">SignOut</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </nav>

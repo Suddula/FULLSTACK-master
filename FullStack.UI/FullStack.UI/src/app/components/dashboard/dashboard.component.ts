@@ -20,17 +20,13 @@ export class DashboardComponent {
       this.role = val || roleFromToken;
     
     });
-    console.log("after role" +this.role);
+    
   }
   ngOnInit(){
-    this.getUsers();
-  }
-  getUsers(){
-    this.api.getUsers().subscribe(res=>{
+    this.api.getUsers()
+    .subscribe(res=>{
       this.users = res;
-
-    })
+    });
   }
- 
 
 }

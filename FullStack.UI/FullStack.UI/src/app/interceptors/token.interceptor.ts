@@ -27,7 +27,6 @@ export class TokenInterceptor implements HttpInterceptor {
     }
     return next.handle(request).pipe(
       catchError((err:any)=>{
-        console.log(err.error +'ERROR')
         if(err instanceof HttpErrorResponse){
           if(err.status === 401){
             console.log('before handle call'+err);
@@ -39,30 +38,25 @@ export class TokenInterceptor implements HttpInterceptor {
             
           }
         }
-        return throwError(()=>err);
+        return throwError(()=>err)
       })
     );
   }
 
   handleUnAuthorizedError(req: HttpRequest<any>, next: HttpHandler){
-   
-    // const accesstoken = this.auth.getToken()!;
-    // const refreshToken = this.auth.getRereshToken()!; 
     let tokenApiModel = new TokenApiModel();
     tokenApiModel.accessToken =this.auth.getToken()!;
     tokenApiModel.refreshToken =this.auth.getRereshToken()!; 
-    return this.auth.renewToken(tokenApiModel)
-    .pipe(
+    return this.auth.renewToken(tokenApiModel).pipe(
       switchMap((data:TokenApiModel)=>{
-        
         this.auth.storeRefreshToken(data.refreshToken);
         this.auth.storeToken(data.accessToken);
-        req = req.clone({
-          setHeaders:{Authorization:`Bearer ${data.accessToken}`} // "Bearer " + myToken
-        })
+          req = req.clone({
+            setHeaders: {Authorization:`Bearer ${data.accessToken}`} // "Bearer " + myToken
+          })
         return next.handle(req);
       }),
-      catchError((err)=>{
+      catchError((error)=>{
         return throwError(()=>{
           this.toast.warning({detail:"Warning", summary:"Token is expired, Please Loging again"});
           this.router.navigate(['login']);
