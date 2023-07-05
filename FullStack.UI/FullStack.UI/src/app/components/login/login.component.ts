@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import { AuthService } from 'src/app/Services/auth.service';
+import { UserStoreService } from 'src/app/Services/user-store.service';
 import ValidateForm from 'src/app/helpers/validateform';
 
 @Component({
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit{
   constructor(private fb:FormBuilder,
     private authServerice:AuthService,
     private router:Router,
-    private toast:NgToastService
+    private toast:NgToastService,
+    private userStore:UserStoreService
     ){}
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -43,7 +45,11 @@ export class LoginComponent implements OnInit{
       .subscribe({
         next:(response)=>{
           this.loginForm.reset();
-          this.authServerice.storeToken(response.token);
+          this.authServerice.storeToken(response.accessToken);
+          this.authServerice.storeRefreshToken(response.refreshToken);
+          const tokenPayload = this.authServerice.decodeToken();
+          this.userStore.setFullNameForStore(tokenPayload.unique_name);
+          this.userStore.setRoleForStore(tokenPayload.role);
           this.toast.success({detail:"SUCCESS",summary:response.message,duration:5000});
           this.router.navigate(['dashboard']);
         },

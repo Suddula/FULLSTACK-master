@@ -18,6 +18,7 @@ import { NgToastModule } from 'ng-angular-popup'
 import { EditeEmployeeComponent } from './components/Employees/edite-employee/edite-employee.component';
 import { AddEmployeeComponent } from './components/Employees/add-employee/add-employee.component';
 import { TokenInterceptor } from './interceptors/token.interceptor';
+import { SideBarComponent } from './components/partail/side-bar/side-bar.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
     RegisterComponent,
     LoginComponent,
     SignupComponent,
-    DashboardComponent
+    DashboardComponent,
+    SideBarComponent
   ],
   imports: [
     BrowserModule,

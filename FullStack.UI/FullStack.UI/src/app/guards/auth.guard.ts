@@ -4,15 +4,11 @@ import { CanActivateFn, Router } from "@angular/router";
 import { NgToastService } from "ng-angular-popup";
 
 
-
-
-// 
-
 export const authGuard : CanActivateFn = (_route, _state) => {
   const token = localStorage.getItem('token');
   const router =inject(Router);
   const toast = inject(NgToastService);
-  console.log(token,token);
+
   if(token){
     return true;
   }else{

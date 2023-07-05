@@ -1,12 +1,14 @@
 ﻿using FullStack.API.Data;
 using FullStack.API.Helpers;
 using FullStack.API.Models;
+using FullStack.API.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -42,12 +44,16 @@ namespace FullStack.API.Controllers
             }
 
             user.Token = CreateJwt(user);
+            var newAccessToken = user.Token;
+            var newRefreshToken = CreateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(5);
+            await _fullStackDBContext.SaveChangesAsync();
 
-
-            return Ok(new
+            return Ok(new TokenApiDto()
             {
-                Token = user.Token,
-                Message = "Login Success!"
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken,
             });
         }
         [HttpPost("register")]
@@ -118,26 +124,93 @@ namespace FullStack.API.Controllers
             var key = Encoding.ASCII.GetBytes("veryverysceret.....");
             var identity = new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.Role,user.Role), 
-                new Claim(ClaimTypes.Name,$"{user.FirstName} {user.LastName}")
+                new Claim(ClaimTypes.Role,user.Role),
+                new Claim(ClaimTypes.Name,$"{user.UserName}")
+                //new Claim(ClaimTypes.Name,$"{user.FirstName} {user.LastName}")
             }) ;
 
             var credentails = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddSeconds(10),
                 SigningCredentials = credentails
 
             };
             var token = jwtTokenHeader.CreateToken(tokenDescriptor);
             return jwtTokenHeader.WriteToken(token);
         }
+
+        private string CreateRefreshToken()
+        {
+            var tokenBytes = RandomNumberGenerator.GetBytes(64);
+            var refershToken = Convert.ToBase64String(tokenBytes);
+
+            var tokenInUser = _fullStackDBContext.Users
+                .Any(a=>a.RefreshToken == refershToken);
+            if(tokenInUser)
+            {
+                return CreateRefreshToken();
+            }
+            return refershToken;
+        }
+
+        private ClaimsPrincipal GetPrincipleFormExpiredToken(string token)
+        {
+            var key = Encoding.ASCII.GetBytes("veryverysceret.....");
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateLifetime = false
+
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+            var prinicipal = tokenHandler.ValidateToken(token,tokenValidationParameters, out securityToken);
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("This is Inavalid Token");
+            return prinicipal;
+
+
+        }
+
+
         [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> GetAllUsers()
         {
             return Ok(await _fullStackDBContext.Users.ToListAsync());
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult>Refresh(TokenApiDto tokenApiDto)
+        {
+            if (tokenApiDto == null)
+                return BadRequest("Invalid Client Request");
+            string accessToken = tokenApiDto.AccessToken;
+            string refreshToken = tokenApiDto.RefreshToken;
+            var principal = GetPrincipleFormExpiredToken(accessToken);
+            var username = principal.Identity.Name;
+            var user = await _fullStackDBContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                return BadRequest("Invalid Request");
+            var newAccessToken = CreateJwt(user);
+            var newRefeshToken = CreateRefreshToken();
+            user.RefreshToken = newAccessToken;
+            await _fullStackDBContext.SaveChangesAsync();
+            return Ok(new TokenApiDto()
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+
+            });
+
+                 
         }
 
     }

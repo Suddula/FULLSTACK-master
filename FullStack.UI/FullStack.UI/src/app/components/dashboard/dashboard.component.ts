@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { ApiService } from 'src/app/Services/api.service';
+import { AuthService } from 'src/app/Services/auth.service';
+import { UserStoreService } from 'src/app/Services/user-store.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,8 +10,17 @@ import { ApiService } from 'src/app/Services/api.service';
 })
 export class DashboardComponent {
   public users: any =[];
-  constructor(private api:ApiService){
-
+  public role:string = '';
+  
+  constructor(private api:ApiService,private auth:AuthService,private userStore:UserStoreService){
+    console.log("befor role" +this.role);
+    this.userStore.getRoleFromStore()
+    .subscribe(val=>{
+      const roleFromToken = this.auth.getroleFromToken();
+      this.role = val || roleFromToken;
+    
+    });
+    console.log("after role" +this.role);
   }
   ngOnInit(){
     this.getUsers();
@@ -20,5 +31,6 @@ export class DashboardComponent {
 
     })
   }
+ 
 
 }
