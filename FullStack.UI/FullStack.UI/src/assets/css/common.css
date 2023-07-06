@@ -6,7 +6,7 @@
   text-align: center;
   margin-bottom: 10px;
 }
-#forget{
+#forget, #signup{
   min-width: 100px;
   margin-left: auto;
   text-decoration: none;
