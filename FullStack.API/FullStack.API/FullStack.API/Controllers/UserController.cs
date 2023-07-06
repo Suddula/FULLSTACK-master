@@ -2,6 +2,7 @@
 using FullStack.API.Helpers;
 using FullStack.API.Models;
 using FullStack.API.Models.Dto;
+using FullStack.API.UtilityService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +22,15 @@ namespace FullStack.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly FullStackDBContext _fullStackDBContext;
-        
-        public UserController(FullStackDBContext fullStackDBContext) {
+        private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
+
+
+
+        public UserController(FullStackDBContext fullStackDBContext, IConfiguration configuration, IEmailService emailService) {
             _fullStackDBContext = fullStackDBContext;
+            _configuration = configuration;
+            _emailService = emailService;
         }
 
         [HttpPost("authenticate")]
@@ -212,5 +219,67 @@ namespace FullStack.API.Controllers
                  
         }
 
+
+        [HttpPost("send-reset-email/{email}")]
+        public async Task<IActionResult> SendEmail(string email)
+        {
+           var user = await _fullStackDBContext.Users.FirstOrDefaultAsync(a=>a.Email == email);
+            if(user is null)
+            {
+                return NotFound(new
+                {
+                    StatusCode =404,
+                    Message ="email Doesn't Exist"
+                });
+            }
+            var tokenBytes = RandomNumberGenerator.GetBytes(64);
+            var emailToken = Convert.ToBase64String(tokenBytes);
+            user.ResetPasswordToken = emailToken;
+            user.ResetPasswordExpiry = DateTime.Now.AddMinutes(15);
+            string from = _configuration["EmailSettings:From"];
+            var emailModel = new EmailModel(email, "Reset Password!!", EmailBody.EmailStringBody(email, emailToken));
+            _emailService.SendEmail(emailModel);
+            _fullStackDBContext.Entry(user).State = EntityState.Modified;
+            await _fullStackDBContext.SaveChangesAsync();
+            return Ok(new
+            {
+                StatusCode = 200,
+                Message = "Email Sent"
+            });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var newToken = resetPasswordDto.EmailToken.Replace(" ", "+");
+            var user = await _fullStackDBContext.Users.AsNoTracking().FirstOrDefaultAsync(a => a.Email == resetPasswordDto.Email);
+         if (user is null)
+            {
+                return NotFound(new
+                {
+                    StatusCode = 404,
+                    Message = "User Doesn't Exist"
+                });
+            }
+            var tokenCode = user.ResetPasswordToken;
+            DateTime emailTokenExpiry = user.ResetPasswordExpiry;
+            if(tokenCode !=resetPasswordDto.EmailToken || emailTokenExpiry < DateTime.Now)
+            {
+                return BadRequest(new
+                {
+                    StatusCode = 400,
+                    Message = "Invalid Reset Link"
+                });
+            }
+            user.Password = PasswordHasher.HashPassword(resetPasswordDto.NewPassword);
+            _fullStackDBContext.Entry(user).State = EntityState.Modified;
+            await _fullStackDBContext.SaveChangesAsync();
+            return Ok(new
+            {
+                StatusCode = 200,
+                Message = "Password Reset SuccessFully"
+            });
+
+        }
     }
 }

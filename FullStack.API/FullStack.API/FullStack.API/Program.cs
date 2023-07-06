@@ -1,4 +1,5 @@
 using FullStack.API.Data;
+using FullStack.API.UtilityService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<FullStackDBContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("FullStackConnectionString"))
 );
+// reset password add depenence injections
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddAuthentication(x =>
 {

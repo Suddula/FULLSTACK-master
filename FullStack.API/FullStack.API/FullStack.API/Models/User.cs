@@ -15,6 +15,9 @@ namespace FullStack.API.Models
         public string Role { get; set; }
         public string RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public string ResetPasswordToken { get; set; }
+        public DateTime ResetPasswordExpiry { get; set; }
+
 
 
     }
