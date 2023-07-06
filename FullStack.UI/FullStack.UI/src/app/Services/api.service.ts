@@ -11,6 +11,6 @@ export class ApiService {
 
   }
   getUsers(){
-    return this.http.get<any>(environment.BASE_API_URL +'/api/User');
+    return this.http.get<any>(environment.USER_API_URL);
   }
 }

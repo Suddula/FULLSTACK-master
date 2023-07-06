@@ -15,7 +15,7 @@
                     <hr>
                     <p>you're receiving this e-email beacause you resquested a password reset for your Let's program account.</p>
                     <p>Please tab the button below to choose a new password.</p>
-                    <a href=""http://locahost:4200/reset?email={{email}}&code={{emailToken}}"" target=""_blank"" style=""background: #0d6efc;padding:10px;border: none;
+                    <a href=""http://localhost:4200/reset?email={email}&code={emailToken}"" target=""_blank"" style=""background: #0d6efc;padding:10px;border: none;
                     border-radius: 4px;display: block;margin: 0 auto;width:50%;text-align: center;text-decoration: none;"">Reset Password</a><br>
                     <p>Kind Regrads,<br><br>
                         Let's Program</p>

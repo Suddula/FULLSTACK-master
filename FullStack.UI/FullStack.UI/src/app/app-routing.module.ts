@@ -8,6 +8,7 @@ import { SignupComponent } from './components/signup/signup.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
+import { ResetComponent } from './components/reset/reset.component';
 
 const routes: Routes = [
   {path:'',redirectTo:'login',pathMatch:'full'},
@@ -16,9 +17,11 @@ const routes: Routes = [
   {path:'dashboard',component:DashboardComponent,canActivate:[authGuard,roleGuard],data:{
     role:"ADMIN"
   }},
+  {path:'reset',component:ResetComponent},
   {path:'employees',component:EmployeeListComponent},
   {path:'employees/add',component:AddEmployeeComponent,canActivate:[authGuard]},
   {path:'employees/edit/:id',component:EditeEmployeeComponent,canActivate:[authGuard]}
+
 ];
 
 @NgModule({

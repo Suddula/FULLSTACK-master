@@ -13,7 +13,7 @@ import { TokenApiModel } from '../models/token-api.model';
 })
 export class AuthService {
 
-private baseApiUrl:string =environment.BASE_API_URL;
+private baseApiUrl:string =environment.USER_API_URL;
 
 private userPayload:any;
 
@@ -22,12 +22,12 @@ private userPayload:any;
   }
     signUp(userObj:any){
 
-      return this.http.post<any>(this.baseApiUrl + "/api/User/register", userObj);
+      return this.http.post<any>(this.baseApiUrl + "/register", userObj);
 
     }
     logIn(loginObj:any){
 
-      return this.http.post<any>(this.baseApiUrl + "/api/User/authenticate",loginObj);
+      return this.http.post<any>(this.baseApiUrl + "/authenticate",loginObj);
     }
   
     storeToken(tokenValue:string){
@@ -69,6 +69,6 @@ private userPayload:any;
     }
 
     renewToken(tokenApi:TokenApiModel){
-      return this.http.post<any>(this.baseApiUrl + '/api/User/refresh',tokenApi);
+      return this.http.post<any>(this.baseApiUrl + '/refresh',tokenApi);
     }
 }

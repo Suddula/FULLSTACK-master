@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
 import { AuthService } from 'src/app/Services/auth.service';
+import { ResetPasswordService } from 'src/app/Services/reset-password.service';
 import { UserStoreService } from 'src/app/Services/user-store.service';
 import ValidateForm from 'src/app/helpers/validateform';
 
@@ -24,7 +25,8 @@ export class LoginComponent implements OnInit{
     private authServerice:AuthService,
     private router:Router,
     private toast:NgToastService,
-    private userStore:UserStoreService
+    private userStore:UserStoreService,
+    private resetPassword:ResetPasswordService
     ){}
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -80,10 +82,26 @@ export class LoginComponent implements OnInit{
   comfirmToSend(){
     if(this.checkValidEmail(this.resetPasswordEmail)){
       console.log(this.resetPasswordEmail);
-      this.resetPasswordEmail = '';
-      const buttonRef =document.getElementById("closeBtn");
-      buttonRef?.click();
+      
       //Api Call to be done
+      this.resetPassword.sendResetPasswordLink(this.resetPasswordEmail)
+      .subscribe({
+        next:(res)=>{
+          this.toast.success({
+            detail:"SUCCESS",summary:"Reset Success!",
+            duration:3000
+          })
+          this.resetPasswordEmail = '';
+          const buttonRef =document.getElementById("closeBtn");
+          buttonRef?.click();
+        },
+        error:(err)=>{
+          this.toast.error({
+            detail:"ERROR",summary:"smothing Went Wrong!",
+            duration:3000
+          });
+        }
+      })
     }
   }
 

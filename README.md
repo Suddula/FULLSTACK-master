@@ -33,5 +33,16 @@ git config --global user.email suddulasurekha93@gmail.com
         1.builder.Service.AddScope<IEmailService, EmailService>
     9.reset password Api Creating UserControll
 
- 12.Angular Page Api Connection   
+ 12.Angular Page Api Connection  (can install Angular CLi Helper Extension ensy to create comp service etc) 
+    1.Create service for reset-password 
+        1.add base Url
+        2.Add reset-password server 
+        3.Add component.ts  
+    2.Create Reset Password Component 
+        1.add rounting path
+        2.Add Html
+        3.Add Css
+        4.Add ts 
 
+
+ 
