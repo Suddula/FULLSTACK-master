@@ -2,9 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgToastService } from 'ng-angular-popup';
-import { AuthService } from 'src/app/Services/auth.service';
 import { ResetPasswordService } from 'src/app/Services/reset-password.service';
-import { UserStoreService } from 'src/app/Services/user-store.service';
+import { ConfirmPasswordValidator } from 'src/app/helpers/confirm-password.validator';
 import ValidateForm from 'src/app/helpers/validateform';
 import { ResetPassword } from 'src/app/models/reset-password.model';
 
@@ -17,28 +16,39 @@ export class ResetComponent {
   type:string="password";
   isText:boolean=false;
   eyeIcon:string= "fa-eye-slash";
-  resetPasswordForm!:FormGroup;
-  public resetPasswordEmail!:string;
+ 
+  // public resetPasswordEmail!:string;
   public isValidEmail!:boolean;
+  // public resetPasswordModel:any ={};
 
-  public resetPasswordModel:any ={};
+
+  // youtub 
+  resetPasswordForm!:FormGroup;
+  emailToReset!:string;
+  emailToken!:string;
+  resetPasswordObj = new ResetPassword();
 
 constructor(private fb:FormBuilder,
-  // private authServerice:AuthService,
+  private activateRoute: ActivatedRoute,
   private router:Router,
   private toast:NgToastService,
-  // private userStore:UserStoreService,
   private resetPassword:ResetPasswordService,
-  private activateRoute: ActivatedRoute){
-    this.resetPasswordModel = new ResetPassword();
+ ){
+    // this.resetPasswordModel = new ResetPassword();
 }
 ngOnInit(){
   this.resetPasswordForm = this.fb.group({
-
     password:['',Validators.required],
-    confirmpassword:['', Validators.required]
+    confirmpassword:['', Validators.required],
+  },{
+    validator:ConfirmPasswordValidator("password","confirmpassword")
+  });
+  this.activateRoute.queryParams.subscribe((query: Params) => {
+    this.emailToReset = query['email'];
+    let urlToken = query['code']
+    this.emailToken = urlToken.replace(/ /g,'+');
+  });
 
-  })
 }
   hideShowPass(){
     this.isText =!this.isText;
@@ -46,17 +56,13 @@ ngOnInit(){
     this.isText ? this.type ='text':this.type ="password";
   }
   reset(){
-    this.activateRoute.queryParams.subscribe((query: Params) => {
-  
-      this.resetPasswordModel.newPassword = this.resetPasswordForm.value.password;
-      this.resetPasswordModel.confirmPassword = this.resetPasswordForm.value.confirmpassword;
-      this.resetPasswordModel.email = query?.['email'];
-      this.resetPasswordModel.emailToken = query?.['code'];
-    });
-    console.log(this.resetPasswordForm.value,String(this.activateRoute.snapshot.paramMap.get('email')));
     if(this.resetPasswordForm.valid){
+      this.resetPasswordObj.email = this.emailToReset;
+      this.resetPasswordObj.newPassword = this.resetPasswordForm.value.password;
+      this.resetPasswordObj.confirmPassword =this.resetPasswordForm.value.confirmPassword;
+      this.resetPasswordObj.emailToken = this.emailToken;
 
-      this.resetPassword.resetPassword(this.resetPasswordModel)
+      this.resetPassword.resetPassword(this.resetPasswordObj)
       .subscribe({
         next:(res)=>{
           this.toast.success({

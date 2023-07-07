@@ -38,11 +38,12 @@ git config --global user.email suddulasurekha93@gmail.com
         1.add base Url
         2.Add reset-password server 
         3.Add component.ts  
+    
     2.Create Reset Password Component 
         1.add rounting path
         2.Add Html
         3.Add Css
-        4.Add ts 
-
+        4.Add ts
+    3.Create Custom Validator confirm-password.validator   
 
  

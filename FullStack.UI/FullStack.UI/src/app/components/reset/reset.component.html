@@ -13,20 +13,20 @@
                 <div class="form-group pt-3">
                   <div class="input-field" [class.error]="resetPasswordForm.controls['password'].dirty && resetPasswordForm.hasError('required','password')">
                     <span class="fa fa-lock p-2"></span>
-                    <input formControlName="password" type="text" placeholder="New Password">
-                    <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
+                    <input formControlName="password" type="password" placeholder="New Password">
+                    <!-- <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span> -->
                   </div>
                 </div>
                 <small *ngIf="resetPasswordForm.controls['password'].dirty && resetPasswordForm.hasError('required','password')" class="text-danger">*New Password is required</small>
                 <div class="form-group pt-3">
                   <div class="input-field" [class.error]="resetPasswordForm.controls['confirmpassword'].dirty && resetPasswordForm.hasError('required','confirmpassword')">
                     <span class="fa fa-lock p-2"></span>
-                    <input formControlName="confirmpassword" [type]="type" placeholder="Comfirm Password">
-                    <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span>
+                    <input formControlName="confirmpassword" type="password" placeholder="Comfirm Password">
+                    <!-- <span (click)="hideShowPass()" class="fa {{eyeIcon}}"></span> -->
                   </div>
                 </div>
                 <small *ngIf="resetPasswordForm.controls['confirmpassword'].dirty && resetPasswordForm.hasError('required','confirmpassword')" class="text-danger">*Comfirm Password is required*</small>
-                <small *ngIf="resetPasswordForm.controls['confirmpassword'].dirty && resetPasswordForm.hasError('required','confirmpassword')" class="text-danger">*Password didn't matched*</small>
+                <small *ngIf="resetPasswordForm.hasError('confirmPasswordValidator','confirmpassword')" class="text-danger">*Password didn't matched*</small>
                 
                 <!-- <div class="form-inline fr mt-4">
                   <a id="forget" class="font-weight-bold" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Forget Password?</a>
